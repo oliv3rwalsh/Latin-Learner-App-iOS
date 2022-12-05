@@ -18,8 +18,6 @@
 		7752E726293A43F2008C3A40 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7752E725293A43F2008C3A40 /* GoogleSignInSwift */; };
 		7752E729293A4CFA008C3A40 /* AuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7752E728293A4CFA008C3A40 /* AuthHandler.swift */; };
 		7752E72B293A5051008C3A40 /* Styling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7752E72A293A5051008C3A40 /* Styling.swift */; };
-		7752E72F293A83ED008C3A40 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7752E72E293A83ED008C3A40 /* AppSettings.swift */; };
-		7752E731293A8415008C3A40 /* SearchPortfolio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7752E730293A8415008C3A40 /* SearchPortfolio.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,8 +51,6 @@
 		7752E727293A47B2008C3A40 /* Latin-Learner-Portfolio-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Latin-Learner-Portfolio-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		7752E728293A4CFA008C3A40 /* AuthHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthHandler.swift; sourceTree = "<group>"; };
 		7752E72A293A5051008C3A40 /* Styling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styling.swift; sourceTree = "<group>"; };
-		7752E72E293A83ED008C3A40 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
-		7752E730293A8415008C3A40 /* SearchPortfolio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPortfolio.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,8 +105,6 @@
 			children = (
 				7752E727293A47B2008C3A40 /* Latin-Learner-Portfolio-App-Info.plist */,
 				7752E6F8293A43CA008C3A40 /* Latin_Learner_Portfolio_AppApp.swift */,
-				7752E72E293A83ED008C3A40 /* AppSettings.swift */,
-				7752E730293A8415008C3A40 /* SearchPortfolio.swift */,
 				7752E6FA293A43CA008C3A40 /* ContentView.swift */,
 				7752E72A293A5051008C3A40 /* Styling.swift */,
 				7752E728293A4CFA008C3A40 /* AuthHandler.swift */,
@@ -282,11 +276,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7752E731293A8415008C3A40 /* SearchPortfolio.swift in Sources */,
 				7752E6FB293A43CA008C3A40 /* ContentView.swift in Sources */,
 				7752E6F9293A43CA008C3A40 /* Latin_Learner_Portfolio_AppApp.swift in Sources */,
 				7752E72B293A5051008C3A40 /* Styling.swift in Sources */,
-				7752E72F293A83ED008C3A40 /* AppSettings.swift in Sources */,
 				7752E729293A4CFA008C3A40 /* AuthHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

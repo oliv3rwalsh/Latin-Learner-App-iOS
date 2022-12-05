@@ -12,39 +12,44 @@ struct ContentView: View {
     @EnvironmentObject var vm: UserAuthModel
     
     var body: some View {
-        VStack{
-            Spacer().frame(height: 20)
-            headerBar()
-            Spacer()
-        }
-    }
-}
-
-struct headerBar : View {
-    @EnvironmentObject var vm: UserAuthModel
-    var body: some View {
-        HStack{
-            Spacer().frame(width: 30)
-            AsyncImage(
-                url: URL(string: vm.profilePicUrl),
-                content: { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: 45, maxHeight: 45)
-                        .cornerRadius(90.0)
-                },
-                placeholder: {
-                    Image(systemName: "person.circle.fill").font(.system(size: 45))
+        if(vm.isLoggedIn){
+            VStack{
+                HStack{
+                    Spacer()
+                    AsyncImage(
+                        url: URL(string: vm.profilePicUrl),
+                        content: { image in
+                            image.resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 45, maxHeight: 45)
+                                .cornerRadius(90.0)
+                        },
+                        placeholder: {
+                            Image(systemName: "person.circle.fill").font(.system(size: 45))
+                        }
+                    )
+                    Spacer()
+                    Text("Signed in as " + vm.givenName).mediumText()
+                    Spacer()
+                    Button(action: {vm.signOut()}){
+                        Text("Sign Out").mediumText()
+                            .padding(5)
+                    }.signOutButton()
+                    Spacer()
                 }
-            )
-            Spacer().frame(width: 30)
-            if(vm.isLoggedIn){
-                Text("Welcome, " + vm.givenName).headerText()
-            } else {
-                Text("Please Sign In").headerText()
+                Spacer()
             }
-            Spacer()
-            // vm.signIn, vm.signOut to sign in and out
+        } else {
+            VStack{
+                Spacer()
+                Text("You must be signed in to access your Latin Learner Portfolio").largeText()
+                    .multilineTextAlignment(.center)
+                Button(action: {vm.signIn()}){
+                    Text("Sign in with Google").mediumText()
+                        .padding(10)
+                }.signInButton()
+                Spacer()
+            }
         }
     }
 }
