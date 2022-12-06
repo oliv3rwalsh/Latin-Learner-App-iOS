@@ -106,6 +106,11 @@ struct pageContent: View {
                 Text("ADD CONTENT HERE").mediumText()
                 Spacer()
             }
+            HStack{
+                Spacer()
+                Text("HOME PAGE").smallText()
+                Spacer()
+            }
             Spacer()
         }.background(Color("Google Blue"))
     }

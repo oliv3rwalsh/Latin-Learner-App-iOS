@@ -13,8 +13,24 @@ struct Latin_Learner_Portfolio_AppApp: App {
     @StateObject var userAuth: UserAuthModel =  UserAuthModel()
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(userAuth)
+            TabView {
+                ContentView()
+                    .tabItem{
+                        Image(systemName: "house")
+                    }
+                    .environmentObject(userAuth)
+                Search()
+                    .tabItem{
+                        Image(systemName: "magnifyingglass")
+                    }
+                    .environmentObject(userAuth)
+                Post()
+                    .tabItem {
+                        Image(systemName: "plus.bubble")
+                    }
+                    .environmentObject(userAuth)
+            }
+            
         }
     }
 }
