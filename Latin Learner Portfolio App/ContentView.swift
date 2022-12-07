@@ -9,6 +9,8 @@ import SwiftUI
 import GoogleSignIn
 import GoogleSignInSwift
 
+let salutations = ["Hey there", "Welcome", "What's up", "Hello"]
+
 struct ContentView: View {
     @EnvironmentObject var vm: UserAuthModel
     
@@ -66,7 +68,8 @@ struct topbar: View {
                     }
                 )
                 Spacer()
-                Text("Signed in as " + vm.givenName).mediumText()
+                // Text("Signed in as " + vm.givenName).mediumText()
+                Text("Latin Learner Portfolio").mediumText()
                 Spacer()
                 signOutButton()
                 Spacer()
@@ -98,20 +101,16 @@ struct signOutButton: View {
 }
 
 struct pageContent: View {
+    @EnvironmentObject var vm: UserAuthModel
     var body: some View {
         VStack{
-            Spacer()
+            Spacer().frame(height: 50)
             HStack{
-                Spacer()
-                Text("ADD CONTENT HERE").mediumText()
-                Spacer()
-            }
-            HStack{
-                Spacer()
-                Text("HOME PAGE").smallText()
+                Spacer().frame(width: 30)
+                Text(salutations.randomElement()! + ", " + vm.givenName).largeText()
                 Spacer()
             }
             Spacer()
-        }.background(Color("Google Blue"))
+        }
     }
 }

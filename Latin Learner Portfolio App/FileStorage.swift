@@ -1,10 +1,15 @@
+//struct uploadButton: View {
+//    var body: some View {
+//
+//    }
+//}
+
 //
 //  FileStorage.swift
 //  Latin Learner Portfolio App
 //
 //  Created by Domenic Sacchetti on 12/6/22.
 //
-
 import SwiftUI
 import Firebase
 import FirebaseStorage
@@ -25,11 +30,30 @@ class FirebaseManager: NSObject {
     
 }
 
+private func persistImageToStorage(image: UIImage?) {
+    let imageToUpload = image
+    
+    let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
+    guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
+    ref.putData(imageData, metadata: nil) { metadata, err in
+        if let err = err {
+            print("Failed to push image to storage: \(err)")
+            return
+        }
+        ref.downloadURL { url, err in
+            if let err = err {
+                print("Failed to retrieve downloadURL: \(err)")
+                return
+            }
+            print("Successfully stored image with url: \(url?.absoluteString ?? "")")
+        }
+    }
+}
+
 struct ImageUpload: View {
     
+    @State var image: UIImage?
     @State var shouldShowImagePicker = false
-    
-    
     
     var body: some View {
         HStack(spacing: 60){
@@ -56,7 +80,7 @@ struct ImageUpload: View {
             }
             if self.image != nil {
                 Button("Upload Image") {
-                    persistImageToStorage()
+                    persistImageToStorage(image: image)
                 }.signInButton()
                     .padding()
                     
@@ -65,26 +89,6 @@ struct ImageUpload: View {
         .padding()
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
             ImagePicker(image: $image)
-        }
-    }
-    
-    @State var image: UIImage?
-    
-    private func persistImageToStorage() {
-        let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
-        guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else { return }
-        ref.putData(imageData, metadata: nil) { metadata, err in
-            if let err = err {
-                print("Failed to push image to storage: \(err)")
-                return
-            }
-            ref.downloadURL { url, err in
-                if let err = err {
-                    print("Failed to retrieve downloadURL: \(err)")
-                    return
-                }
-                print("Successfully stored image with url: \(url?.absoluteString ?? "")")
-            }
         }
     }
 }
