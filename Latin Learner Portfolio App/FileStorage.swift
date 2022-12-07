@@ -32,28 +32,35 @@ struct ImageUpload: View {
     
     
     var body: some View {
-        VStack {
-            Button {
-                shouldShowImagePicker.toggle()
-            } label: {
-                VStack {
-                    if let image = self.image {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 128, height: 128)
-                        Text("Click to Change")
-                    } else {
-                        Image(systemName: "photo")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 32, height: 32)
+        HStack(spacing: 60){
+            VStack {
+                Button {
+                    shouldShowImagePicker.toggle()
+                } label: {
+                    VStack {
+                        if let image = self.image {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 128, height: 128)
+                            Text("Change Image").mediumText()
+                        } else {
+                            Image(systemName: "icloud.and.arrow.up")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 50, height: 50)
+                            Text("Select Image").largeText()
+                        }
                     }
                 }
             }
-            Button("Upload Image") {
-                persistImageToStorage()
-            }.padding()
+            if self.image != nil {
+                Button("Upload Image") {
+                    persistImageToStorage()
+                }.signInButton()
+                    .padding()
+                    
+            }
         }
         .padding()
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {

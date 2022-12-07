@@ -34,21 +34,11 @@ struct postPageContent: View {
             Spacer()
             HStack{
                 Spacer()
-                Text("ADD CONTENT HERE").mediumText()
-                Spacer()
-            }
-            HStack{
-                Spacer()
-                Text("POST PAGE").smallText()
-                Spacer()
-            }
-            HStack{
-                Spacer()
                 ImageUpload()
                 Spacer()
             }
             Spacer()
-        }.background(Color("Google Green"))
+        }
     }
 }
 
