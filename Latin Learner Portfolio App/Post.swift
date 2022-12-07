@@ -42,6 +42,11 @@ struct postPageContent: View {
                 Text("POST PAGE").smallText()
                 Spacer()
             }
+            HStack{
+                Spacer()
+                ImageUpload()
+                Spacer()
+            }
             Spacer()
         }.background(Color("Google Green"))
     }
