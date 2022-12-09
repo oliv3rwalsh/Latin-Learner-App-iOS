@@ -80,34 +80,27 @@ struct ImageUpload: View {
     @State var shouldShowImagePicker = false
     
     var body: some View {
-        HStack(spacing: 60){
+        VStack(spacing: 60){
             VStack {
                 Button {
                     shouldShowImagePicker.toggle()
                 } label: {
                     VStack {
                         if let image = self.image {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 128, height: 128)
-                            Text("Change Image").mediumText()
+                            Image(uiImage: image).displayImage()
+                            Text("Replace Image").mediumText()
                         } else {
-                            Image(systemName: "icloud.and.arrow.up")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 50, height: 50)
-                            Text("Select Image").largeText()
+                            Image(systemName: "icloud.and.arrow.up").uploadImageButton()
+                            Text("Upload Image").largeText()
                         }
                     }
+//                    .uploadContainer()
                 }
             }
             if self.image != nil {
-                Button("Upload Image") {
+                Button(action: {
                     persistImageToStorage(image: image)
-                }.signInButton()
-                    .padding()
-                    
+                }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
             }
         }
         .padding()

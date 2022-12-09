@@ -33,10 +33,30 @@ extension Button {
         self.background(Color(.black))
             .foregroundColor(Color(.white))
     }
+    func publishButton() -> some View {
+        self.background(Color.white.shadow(color: Color.gray, radius: 10, x: 0, y: 0))
+    }
 }
 
 extension VStack {
     func bar() -> some View {
         self.background(Color.white.shadow(color: Color.gray, radius: 10, x: 0, y: 0))
+    }
+    func uploadContainer() -> some View {
+        self.background(Color.white.shadow(color: Color.gray, radius: 10, x: 0, y: 0))
+            
+    }
+}
+
+extension Image {
+    func displayImage () -> some View {
+        self.resizable()
+        .scaledToFill()
+        .frame(width: 128, height: 128)
+    }
+    func uploadImageButton() -> some View {
+        self.resizable()
+        .scaledToFill()
+        .frame(width: 50, height: 50)
     }
 }
