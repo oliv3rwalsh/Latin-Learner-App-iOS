@@ -43,7 +43,16 @@ class upload: ObservableObject {
     @Published var uploadedSuccessfully = false
     @Published var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
     
+    @Published var uploadInProgress = false
+    
+    func reset() {
+        self.awaitfileUpload = false
+        self.uploadedSuccessfully = false
+        self.uploadErrMessage = "EXAMPLE ERROR MESSAGE"
+    }
+    
     func persistImageToStorage(image: UIImage?) {
+        self.uploadInProgress = true
        let imageToUpload = image
 
        let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
@@ -53,6 +62,7 @@ class upload: ObservableObject {
                self.awaitfileUpload = true
                self.uploadedSuccessfully = false
                self.uploadErrMessage = "\(err)"
+               self.uploadInProgress = false
                return
            }
            ref.downloadURL { url, err in
@@ -60,11 +70,13 @@ class upload: ObservableObject {
                    self.awaitfileUpload = true
                    self.uploadedSuccessfully = false
                    self.uploadErrMessage = "\(err)"
+                   self.uploadInProgress = false
                    return
                }
                storeUserInformation(file: url!)
                self.awaitfileUpload = true
                self.uploadedSuccessfully = true
+               self.uploadInProgress = false
            }
        }
    }
@@ -93,47 +105,61 @@ struct ImageUpload: View {
     @ObservedObject var u = upload()
     
     var body: some View {
-        if(!u.awaitfileUpload){
-            VStack(spacing: 60){
-                VStack {
-                    Button {
-                        shouldShowImagePicker.toggle()
-                    } label: {
-                        VStack {
-                            if let image = self.image {
-                                Image(uiImage: image).displayImage()
-                                Text("Replace Image").mediumText()
-                            } else {
-                                Image(systemName: "icloud.and.arrow.up").uploadImageButton()
-                                Text("Upload Image").largeText()
+        if(!u.uploadInProgress){
+            if(!u.awaitfileUpload){
+                VStack(spacing: 60){
+                    VStack {
+                        Button {
+                            shouldShowImagePicker.toggle()
+                        } label: {
+                            VStack {
+                                if let image = self.image {
+                                    Image(uiImage: image).displayImage()
+                                    Text("Replace Image").mediumText()
+                                } else {
+                                    Image(systemName: "icloud.and.arrow.up").uploadImageButton()
+                                    Text("Upload Image").largeText()
+                                }
                             }
                         }
                     }
+                    if self.image != nil {
+                        Button(action: {
+                            u.persistImageToStorage(image: image)
+                        }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
+                    }
                 }
-                if self.image != nil {
-                    Button(action: {
-                        u.persistImageToStorage(image: image)
-                    }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
+                .padding()
+                .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {ImagePicker(image: $image)}
+            } else {
+                if(u.uploadedSuccessfully == true){
+                    VStack(spacing: 30){
+                        Image(systemName: "checkmark.icloud")
+                            .uploadIcon()
+                            .foregroundColor(Color("Google Green"))
+                        Text("Image Published").largeText()
+                        Button(action: {u.reset(); self.image = nil}){
+                            Text("Dismiss").mediumText().padding(15)
+                        }.publishButton().padding()
+                    }
+                } else {
+                    VStack(spacing: 30){
+                        Image(systemName: "exclamationmark.icloud")
+                            .uploadIcon()
+                            .foregroundColor(Color("Google Red"))
+                        Text("Failed to Publish").largeText()
+                        Button(action: {u.reset()}){
+                            Text("Try Again").mediumText().padding(15)
+                        }.publishButton().padding()
+                    }
                 }
             }
-            .padding()
-            .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {ImagePicker(image: $image)}
         } else {
-            if(u.uploadedSuccessfully == true){
-                VStack(spacing: 30){
-                    Image(systemName: "checkmark.icloud")
-                        .uploadImageButton()
-                        .foregroundColor(Color("Google Green"))
-                    Text("Image Published").largeText()
-                }
-            } else {
-                VStack(spacing: 30){
-                    Image(systemName: "exclamationmark.icloud")
-                        .uploadImageButton()
-                        .foregroundColor(Color("Google Red"))
-                    Text("Failed to Publish").largeText()
-                    Text(u.uploadErrMessage).smallText()
-                }
+            VStack(spacing: 30){
+                Image(systemName: "link.icloud")
+                    .uploadIcon()
+                    .foregroundColor(Color(.gray))
+                Text("Publishing Image").largeText()
             }
         }
     }

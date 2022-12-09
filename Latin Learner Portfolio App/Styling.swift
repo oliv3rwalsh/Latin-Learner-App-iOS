@@ -59,4 +59,9 @@ extension Image {
         .scaledToFill()
         .frame(width: 50, height: 50)
     }
+    func uploadIcon() -> some View {
+        self.resizable()
+        .scaledToFill()
+        .frame(width: 75, height: 75)
+    }
 }
