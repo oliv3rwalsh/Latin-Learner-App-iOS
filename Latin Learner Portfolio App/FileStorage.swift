@@ -115,10 +115,14 @@ struct ImageUpload: View {
                             VStack {
                                 if let image = self.image {
                                     Image(uiImage: image).displayImage()
-                                    Text("Replace Image").mediumText()
+                                    Text("Click to Replace").mediumText()
                                 } else {
-                                    Image(systemName: "icloud.and.arrow.up").uploadImageButton()
-                                    Text("Upload Image").largeText()
+                                    VStack{
+                                        VStack{
+                                            Image(systemName: "icloud.and.arrow.up").uploadImageButton()
+                                            Text("Upload Image").largeText()
+                                        }.padding(35)
+                                    }.uploadContainer()
                                 }
                             }
                         }
