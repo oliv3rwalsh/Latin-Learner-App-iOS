@@ -38,6 +38,40 @@ class FirebaseManager: NSObject {
     
 }
 
+class upload: ObservableObject {
+    @Published var awaitfileUpload = false
+    @Published var uploadedSuccessfully = false
+    @Published var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
+    
+    func persistImageToStorage(image: UIImage?) {
+       let imageToUpload = image
+
+       let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
+       guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
+       ref.putData(imageData, metadata: nil) { metadata, err in
+           if let err = err {
+               self.awaitfileUpload = true
+               self.uploadedSuccessfully = false
+               self.uploadErrMessage = "\(err)"
+               return
+           }
+           ref.downloadURL { url, err in
+               if let err = err {
+                   self.awaitfileUpload = true
+                   self.uploadedSuccessfully = false
+                   self.uploadErrMessage = "\(err)"
+                   return
+               }
+               storeUserInformation(file: url!)
+               self.awaitfileUpload = true
+               self.uploadedSuccessfully = true
+           }
+       }
+   }
+}
+
+
+
  func storeUserInformation(file: URL) {
     guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
     guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
@@ -56,39 +90,10 @@ struct ImageUpload: View {
     @State var image: UIImage?
     @State var shouldShowImagePicker = false
     
-    @State var awaitfileUpload = false
-    @State var uploadedSuccessfully = false
-    @State var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
-    
-    
-    func persistImageToStorage(image: UIImage?) {
-       let imageToUpload = image
-       
-       let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
-       guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
-       ref.putData(imageData, metadata: nil) { metadata, err in
-           if let err = err {
-               awaitfileUpload = true
-               uploadedSuccessfully = false
-               uploadErrMessage = "\(err)"
-               return
-           }
-           ref.downloadURL { url, err in
-               if let err = err {
-                   awaitfileUpload = true
-                   uploadedSuccessfully = false
-                   uploadErrMessage = "\(err)"
-                   return
-               }
-               storeUserInformation(file: url!)
-               awaitfileUpload = true
-               uploadedSuccessfully = true
-           }
-       }
-   }
+    @ObservedObject var u = upload()
     
     var body: some View {
-        if(!awaitfileUpload){
+        if(!u.awaitfileUpload){
             VStack(spacing: 60){
                 VStack {
                     Button {
@@ -107,14 +112,14 @@ struct ImageUpload: View {
                 }
                 if self.image != nil {
                     Button(action: {
-                        persistImageToStorage(image: image)
+                        u.persistImageToStorage(image: image)
                     }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
                 }
             }
             .padding()
             .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {ImagePicker(image: $image)}
         } else {
-            if(uploadedSuccessfully == true){
+            if(u.uploadedSuccessfully == true){
                 VStack(spacing: 30){
                     Image(systemName: "checkmark.icloud")
                         .uploadImageButton()
@@ -127,7 +132,7 @@ struct ImageUpload: View {
                         .uploadImageButton()
                         .foregroundColor(Color("Google Red"))
                     Text("Failed to Publish").largeText()
-                    Text(uploadErrMessage).smallText()
+                    Text(u.uploadErrMessage).smallText()
                 }
             }
         }
