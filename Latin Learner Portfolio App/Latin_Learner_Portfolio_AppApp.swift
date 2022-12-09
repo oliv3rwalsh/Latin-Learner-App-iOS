@@ -21,7 +21,7 @@ struct Latin_Learner_Portfolio_AppApp: App {
                     .environmentObject(userAuth)
                 Search()
                     .tabItem{
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: "text.book.closed")
                     }
                     .environmentObject(userAuth)
                 Post()

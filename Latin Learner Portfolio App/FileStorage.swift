@@ -166,7 +166,7 @@ struct ImageUpload: View {
                         Text("UID: \(d.userUID)")
                         Text("EMAIL: \(d.userEmail)")
                         Text("URL: \(d.fileURL)")
-                        AsyncImage(url: URL(string: "\(d.fileURL)"))
+                        // AsyncImage(url: URL(string: "\(d.fileURL)"))
                     }
                 }
                 .padding()
