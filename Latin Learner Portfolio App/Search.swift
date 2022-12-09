@@ -22,12 +22,6 @@ struct Search: View {
     }
 }
 
-struct Search_Previews: PreviewProvider {
-    static var previews: some View {
-        Search()
-    }
-}
-
 struct searchPageContent: View {
     var body: some View {
         VStack{
