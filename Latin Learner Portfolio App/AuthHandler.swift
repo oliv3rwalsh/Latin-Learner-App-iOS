@@ -1,5 +1,7 @@
 import SwiftUI
 import GoogleSignIn
+import Firebase
+import FirebaseAuth
 
 class UserAuthModel: ObservableObject {
     
@@ -9,7 +11,29 @@ class UserAuthModel: ObservableObject {
     @Published var errorMessage: String = ""
     
     init(){
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
         check()
+    }
+    
+    private func authenticateUser(for user: GIDGoogleUser?, with error: Error?) {
+        if let error = error {
+            self.errorMessage = "error: \(error.localizedDescription)"
+            return
+        }
+
+        guard let authentication = user?.authentication, let idToken = authentication.idToken else { return }
+
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
+
+        Auth.auth().signIn(with: credential) { [unowned self] (_, error) in
+            if let error = error {
+                self.errorMessage = "error: \(error.localizedDescription)"
+            } else {
+                self.checkStatus()
+            }
+        }
     }
     
     func checkStatus(){
@@ -38,25 +62,35 @@ class UserAuthModel: ObservableObject {
         }
     }
     
-    func signIn(){
-        
-       guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {return}
-
-        let signInConfig = GIDConfiguration.init(clientID: "671600405253-u9umsj7usbnur34uveqitnj9numi70o7.apps.googleusercontent.com")
-        GIDSignIn.sharedInstance.signIn(
-            with: signInConfig,
-            presenting: presentingViewController,
-            callback: { user, error in
-                if let error = error {
-                    self.errorMessage = "error: \(error.localizedDescription)"
-                }
-                self.checkStatus()
+    func signIn() {
+        if GIDSignIn.sharedInstance.hasPreviousSignIn() {
+            GIDSignIn.sharedInstance.restorePreviousSignIn { [unowned self] user, error in
+                authenticateUser(for: user, with: error)
             }
-        )
+        } else {
+            guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+        
+            let configuration = GIDConfiguration(clientID: clientID)
+        
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+            guard let rootViewController = windowScene.windows.first?.rootViewController else { return }
+            
+            GIDSignIn.sharedInstance.signIn(with: configuration, presenting: rootViewController) { [unowned self] user, error in
+                authenticateUser(for: user, with: error)
+            }
+            self.checkStatus()
+        }
     }
     
-    func signOut(){
+    func signOut() {
         GIDSignIn.sharedInstance.signOut()
-        self.checkStatus()
+      
+        do {
+            try Auth.auth().signOut()
+            
+            self.checkStatus()
+        } catch {
+            self.errorMessage = "error: \(error.localizedDescription)"
+        }
     }
 }

@@ -21,7 +21,9 @@ class FirebaseManager: NSObject {
     static let shared = FirebaseManager()
     
     override init() {
-        FirebaseApp.configure()
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
         
         self.storage = Storage.storage()
         
