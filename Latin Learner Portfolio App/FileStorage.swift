@@ -12,11 +12,15 @@
 //
 import SwiftUI
 import Firebase
+import FirebaseAuth
 import FirebaseStorage
+import FirebaseFirestore
 
 class FirebaseManager: NSObject {
     
+    let auth: Auth
     let storage: Storage
+    let firestore: Firestore
     
     static let shared = FirebaseManager()
     
@@ -25,14 +29,16 @@ class FirebaseManager: NSObject {
             FirebaseApp.configure()
         }
         
+        self.auth = Auth.auth()
         self.storage = Storage.storage()
+        self.firestore = Firestore.firestore()
         
         super.init()
     }
     
 }
 
-private func persistImageToStorage(image: UIImage?) {
+ func persistImageToStorage(image: UIImage?) {
     let imageToUpload = image
     
     let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
@@ -48,8 +54,24 @@ private func persistImageToStorage(image: UIImage?) {
                 return
             }
             print("Successfully stored image with url: \(url?.absoluteString ?? "")")
+            
+            storeUserInformation(file: url!)
         }
     }
+}
+
+ func storeUserInformation(file: URL) {
+    guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+    guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+    let userData = ["email": email, "uid": uid, "testURL": file.absoluteString]
+    FirebaseManager.shared.firestore.collection("users")
+        .document(uid).setData(userData) { err in
+            if let err = err {
+                print("Failed to store data: \(err)")
+                return
+            }
+            print("Successfully stored data")
+        }
 }
 
 struct ImageUpload: View {

@@ -26,6 +26,7 @@
 		B0B5B9E529426E2D002D0A67 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B0B5B9E429426E2D002D0A67 /* FirebaseAuth */; };
 		B0B5B9E729426E2D002D0A67 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B0B5B9E629426E2D002D0A67 /* FirebaseFirestore */; };
 		B0B5B9E929426E2D002D0A67 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = B0B5B9E829426E2D002D0A67 /* FirebaseStorage */; };
+		B0B5B9EB2942C7D8002D0A67 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5B9EA2942C7D8002D0A67 /* Resources.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		77F101352940207B00145F1A /* FileStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStorage.swift; sourceTree = "<group>"; };
 		77F101372940208B00145F1A /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		77F1013C2940221D00145F1A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B0B5B9EA2942C7D8002D0A67 /* Resources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				7752E72A293A5051008C3A40 /* Styling.swift */,
 				77F101372940208B00145F1A /* ImagePicker.swift */,
 				7752E728293A4CFA008C3A40 /* AuthHandler.swift */,
+				B0B5B9EA2942C7D8002D0A67 /* Resources.swift */,
 				7752E6FC293A43CB008C3A40 /* Assets.xcassets */,
 				7752E6FE293A43CB008C3A40 /* Preview Content */,
 			);
@@ -308,6 +311,7 @@
 				778563EA293FD4F000C0699D /* Post.swift in Sources */,
 				7752E72B293A5051008C3A40 /* Styling.swift in Sources */,
 				77F101382940208B00145F1A /* ImagePicker.swift in Sources */,
+				B0B5B9EB2942C7D8002D0A67 /* Resources.swift in Sources */,
 				77F101362940207B00145F1A /* FileStorage.swift in Sources */,
 				7752E729293A4CFA008C3A40 /* AuthHandler.swift in Sources */,
 			);
