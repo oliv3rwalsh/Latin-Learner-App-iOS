@@ -98,11 +98,38 @@ class upload: ObservableObject {
         }
 }
 
+class download: ObservableObject {
+    @Published var userUID: String = "Not Loaded Yet"
+    @Published var fileURL: String = "Not Loaded Yet"
+    @Published var userEmail: String = "Not Loaded Yet"
+    
+    func retrieveImage() {
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
+            print("Failed to find user uid")
+            return
+        }
+        
+        FirebaseManager.shared.firestore.collection("users")
+            .document(uid).getDocument { snapshot, err in
+                if let err = err {
+                    print("Failed to retrieve current user: \(err)")
+                    return
+                }
+                guard let data = snapshot?.data() else { return }
+                print(data)
+                self.userUID = data["uid"] as! String
+                self.fileURL = data["testURL"] as! String
+                self.userEmail = data["email"] as! String
+            }
+    }
+}
+
 struct ImageUpload: View {
     @State var image: UIImage?
     @State var shouldShowImagePicker = false
     
     @ObservedObject var u = upload()
+    @ObservedObject var d = download()
     
     var body: some View {
         if(!u.uploadInProgress){
@@ -131,6 +158,15 @@ struct ImageUpload: View {
                         Button(action: {
                             u.persistImageToStorage(image: image)
                         }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
+                    }
+                    Button("retrieveImage") {
+                        d.retrieveImage()
+                    }
+                    VStack {
+                        Text("UID: \(d.userUID)")
+                        Text("EMAIL: \(d.userEmail)")
+                        Text("URL: \(d.fileURL)")
+                        AsyncImage(url: URL(string: "\(d.fileURL)"))
                     }
                 }
                 .padding()
