@@ -1,4 +1,4 @@
-//struct uploadButton: View {
+//struct example: View {
 //    var body: some View {
 //
 //    }
@@ -15,10 +15,6 @@ import Firebase
 import FirebaseAuth
 import FirebaseStorage
 import FirebaseFirestore
-
-var awaitfileUpload = true
-var uploadedSuccessfully = false
-var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
 
 class FirebaseManager: NSObject {
     
@@ -42,35 +38,6 @@ class FirebaseManager: NSObject {
     
 }
 
- func persistImageToStorage(image: UIImage?) {
-    let imageToUpload = image
-    
-    let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
-    guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
-    ref.putData(imageData, metadata: nil) { metadata, err in
-        if let err = err {
-            // print("Failed to push image to storage: \(err)")
-            awaitfileUpload = true
-            uploadedSuccessfully = false
-            uploadErrMessage = "\(err)"
-            return
-        }
-        ref.downloadURL { url, err in
-            if let err = err {
-                // print("Failed to retrieve downloadURL: \(err)")
-                awaitfileUpload = true
-                uploadedSuccessfully = false
-                uploadErrMessage = "\(err)"
-                return
-            }
-            // print("Successfully stored image with url: \(url?.absoluteString ?? "")")
-            awaitfileUpload = true
-            uploadedSuccessfully = true
-            storeUserInformation(file: url!)
-        }
-    }
-}
-
  func storeUserInformation(file: URL) {
     guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
     guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
@@ -86,12 +53,42 @@ class FirebaseManager: NSObject {
 }
 
 struct ImageUpload: View {
-    
     @State var image: UIImage?
     @State var shouldShowImagePicker = false
     
+    @State var awaitfileUpload = false
+    @State var uploadedSuccessfully = false
+    @State var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
+    
+    
+    func persistImageToStorage(image: UIImage?) {
+       let imageToUpload = image
+       
+       let ref = FirebaseManager.shared.storage.reference(withPath: "TestImage")
+       guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
+       ref.putData(imageData, metadata: nil) { metadata, err in
+           if let err = err {
+               awaitfileUpload = true
+               uploadedSuccessfully = false
+               uploadErrMessage = "\(err)"
+               return
+           }
+           ref.downloadURL { url, err in
+               if let err = err {
+                   awaitfileUpload = true
+                   uploadedSuccessfully = false
+                   uploadErrMessage = "\(err)"
+                   return
+               }
+               storeUserInformation(file: url!)
+               awaitfileUpload = true
+               uploadedSuccessfully = true
+           }
+       }
+   }
+    
     var body: some View {
-        if(awaitfileUpload == false){
+        if(!awaitfileUpload){
             VStack(spacing: 60){
                 VStack {
                     Button {
@@ -122,7 +119,7 @@ struct ImageUpload: View {
                     Image(systemName: "checkmark.icloud")
                         .uploadImageButton()
                         .foregroundColor(Color("Google Green"))
-                    Text("Published Successfully").largeText()
+                    Text("Image Published").largeText()
                 }
             } else {
                 VStack(spacing: 30){
