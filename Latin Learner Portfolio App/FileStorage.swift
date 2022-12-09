@@ -16,6 +16,10 @@ import FirebaseAuth
 import FirebaseStorage
 import FirebaseFirestore
 
+var awaitfileUpload = true
+var uploadedSuccessfully = false
+var uploadErrMessage = "EXAMPLE ERROR MESSAGE"
+
 class FirebaseManager: NSObject {
     
     let auth: Auth
@@ -45,16 +49,23 @@ class FirebaseManager: NSObject {
     guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
     ref.putData(imageData, metadata: nil) { metadata, err in
         if let err = err {
-            print("Failed to push image to storage: \(err)")
+            // print("Failed to push image to storage: \(err)")
+            awaitfileUpload = true
+            uploadedSuccessfully = false
+            uploadErrMessage = "\(err)"
             return
         }
         ref.downloadURL { url, err in
             if let err = err {
-                print("Failed to retrieve downloadURL: \(err)")
+                // print("Failed to retrieve downloadURL: \(err)")
+                awaitfileUpload = true
+                uploadedSuccessfully = false
+                uploadErrMessage = "\(err)"
                 return
             }
-            print("Successfully stored image with url: \(url?.absoluteString ?? "")")
-            
+            // print("Successfully stored image with url: \(url?.absoluteString ?? "")")
+            awaitfileUpload = true
+            uploadedSuccessfully = true
             storeUserInformation(file: url!)
         }
     }
@@ -80,32 +91,48 @@ struct ImageUpload: View {
     @State var shouldShowImagePicker = false
     
     var body: some View {
-        VStack(spacing: 60){
-            VStack {
-                Button {
-                    shouldShowImagePicker.toggle()
-                } label: {
-                    VStack {
-                        if let image = self.image {
-                            Image(uiImage: image).displayImage()
-                            Text("Replace Image").mediumText()
-                        } else {
-                            Image(systemName: "icloud.and.arrow.up").uploadImageButton()
-                            Text("Upload Image").largeText()
+        if(awaitfileUpload == false){
+            VStack(spacing: 60){
+                VStack {
+                    Button {
+                        shouldShowImagePicker.toggle()
+                    } label: {
+                        VStack {
+                            if let image = self.image {
+                                Image(uiImage: image).displayImage()
+                                Text("Replace Image").mediumText()
+                            } else {
+                                Image(systemName: "icloud.and.arrow.up").uploadImageButton()
+                                Text("Upload Image").largeText()
+                            }
                         }
                     }
-//                    .uploadContainer()
+                }
+                if self.image != nil {
+                    Button(action: {
+                        persistImageToStorage(image: image)
+                    }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
                 }
             }
-            if self.image != nil {
-                Button(action: {
-                    persistImageToStorage(image: image)
-                }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
+            .padding()
+            .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {ImagePicker(image: $image)}
+        } else {
+            if(uploadedSuccessfully == true){
+                VStack(spacing: 30){
+                    Image(systemName: "checkmark.icloud")
+                        .uploadImageButton()
+                        .foregroundColor(Color("Google Green"))
+                    Text("Published Successfully").largeText()
+                }
+            } else {
+                VStack(spacing: 30){
+                    Image(systemName: "exclamationmark.icloud")
+                        .uploadImageButton()
+                        .foregroundColor(Color("Google Red"))
+                    Text("Failed to Publish").largeText()
+                    Text(uploadErrMessage).smallText()
+                }
             }
-        }
-        .padding()
-        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
-            ImagePicker(image: $image)
         }
     }
 }
