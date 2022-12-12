@@ -92,10 +92,10 @@ class upload: ObservableObject {
     
     func storeUserInformation(file: URL, tag: String, name: String) {
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
-        let userData = ["email": email, "uid": uid, "\(name)": file.absoluteString]
+//        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+        let userData = ["uid": uid, "\(name)": file.absoluteString]
         FirebaseManager.shared.firestore.collection("users")
-            .document(uid).collection("tags").document(tag)
+            .document(uid).collection("files").document(tag)
             .setData(userData) { err in
                 if let err = err {
                     print("Failed to store data: \(err)")
@@ -116,10 +116,10 @@ class download: ObservableObject {
             print("Failed to find user uid")
             return
         }
-//        let tag: String = "Le Outdoors"
-        let tag: String = "Le Fall o' Agua"
-        FirebaseManager.shared.firestore.collection("users")
-            .document(uid).collection("tags").document(tag).getDocument { snapshot, err in
+        var main = FirebaseManager.shared.firestore.collection("users")
+            .document(uid).collection("tags")
+        
+            main.document("Le Outdoors").getDocument { snapshot, err in
                 if let err = err {
                     print("Failed to retrieve current user: \(err)")
                     return
@@ -128,7 +128,7 @@ class download: ObservableObject {
                 print(data)
                 self.userUID = data["uid"] as! String
                 // self.fileURL = data["testURL"] as! String
-                self.userEmail = data["email"] as! String
+//                self.userEmail = data["email"] as! String
             }
     }
 }
@@ -138,8 +138,7 @@ struct ImageUpload: View {
     @State var shouldShowImagePicker = false
     @State var tags = ["Le Outdoors", "Le Fall o' Agua"]
     @State var tagSelectionUpload = "Le Outdoors"
-    @State var tagSelectionDownload = ""
-    @State var fileName = ""
+    @State var fileNameUpload = ""
     
     @ObservedObject var u = upload()
     @ObservedObject var d = download()
@@ -173,10 +172,32 @@ struct ImageUpload: View {
                                 Text($0)
                             }
                         }.pickerStyle(.menu)
-                        TextField("File Name", text: $fileName)
+                        TextField("File Name", text: $fileNameUpload)
                         Button(action: {
-                            u.persistImageToStorage(image: image, tag: tagSelectionUpload, name: fileName)
+                            u.persistImageToStorage(image: image, tag: tagSelectionUpload, name: fileNameUpload)
                         }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
+                    }
+//                    Picker("Select a tag", selection: $tagSelectionDownload) {
+//                        ForEach(tags, id: \.self) {
+//                            Text($0)
+//                        }
+//                    }.pickerStyle(.menu)
+//                    TextField("File Name", text: $fileNameDownload)
+                    Button("retrieveImage") {
+                        d.retrieveImage()
+                    }
+                    VStack {
+//                        Text("UID: \(d.userUID)")
+//                        Text("EMAIL: \(d.userEmail)")
+//                        Text("URL: \(d.fileURL)")
+//                        AsyncImage(url: URL(string: "\(d.fileURL)")) { phase in
+//                            if let image = phase.image {
+//                                image.resizable()
+//                                    .aspectRatio(contentMode: .fill)
+//                            }
+//                        }
+//                            .frame(width: 64, height: 64)
+//                            .background(Color.gray)
                     }
                 }
                 .padding()
