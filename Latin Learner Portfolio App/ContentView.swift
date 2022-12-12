@@ -45,7 +45,7 @@ struct homePageContent: View {
                 }
                 HStack{
                     Spacer()
-                    Image(systemName: "moon.zzz.fill")
+                    Image(systemName: "doc.text.magnifyingglass")
                         .resizable()
                         .scaledToFill()
                         .frame(width: 20, height: 20)
