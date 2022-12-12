@@ -29,12 +29,16 @@ struct ContentView: View {
 
 struct homePageContent: View {
     @EnvironmentObject var vm: UserAuthModel
+    @ObservedObject var d = download()
     var body: some View {
         ScrollView(showsIndicators: false){
             VStack{
                 Spacer()
                 VStack{
                     Spacer().frame(height: 60)
+                    Button(action: {d.retrieveImage()}){
+                        Text("Download")
+                    }
                     examplePost()
                     examplePost()
                     examplePost()

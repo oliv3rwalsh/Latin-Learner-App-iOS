@@ -56,8 +56,15 @@ class upload: ObservableObject {
     func persistImageToStorage(image: UIImage?, tag: String, name: String) {
         self.uploadInProgress = true
         let imageToUpload = image
-
-        let ref = FirebaseManager.shared.storage.reference(withPath: name)
+        
+        let words = name.components(separatedBy: " ")
+        var formattedName = ""
+        for word in words {
+            formattedName = formattedName + word.capitalized + "-"
+        }
+        formattedName = String(formattedName.dropLast())
+        let ref = FirebaseManager.shared.storage.reference(withPath: formattedName)
+        
         guard let imageData = imageToUpload?.jpegData(compressionQuality: 0.5) else { return }
         ref.putData(imageData, metadata: nil) { metadata, err in
             if let err = err {
@@ -75,7 +82,7 @@ class upload: ObservableObject {
                     self.uploadInProgress = false
                     return
                 }
-                self.storeUserInformation(file: url!, tag: tag, name: name)
+                self.storeUserInformation(file: url!, tag: tag, name: formattedName)
                 self.awaitfileUpload = true
                 self.uploadedSuccessfully = true
                 self.uploadInProgress = false
@@ -120,7 +127,7 @@ class download: ObservableObject {
                 guard let data = snapshot?.data() else { return }
                 print(data)
                 self.userUID = data["uid"] as! String
-                self.fileURL = data["testURL"] as! String
+                // self.fileURL = data["testURL"] as! String
                 self.userEmail = data["email"] as! String
             }
     }
@@ -129,9 +136,9 @@ class download: ObservableObject {
 struct ImageUpload: View {
     @State var image: UIImage?
     @State var shouldShowImagePicker = false
-    @State var tagSelectionUpload = ""
-    @State var tagSelectionDownload = ""
     @State var tags = ["Le Outdoors", "Le Fall o' Agua"]
+    @State var tagSelectionUpload = "Le Outdoors"
+    @State var tagSelectionDownload = ""
     @State var fileName = ""
     
     @ObservedObject var u = upload()
@@ -170,22 +177,6 @@ struct ImageUpload: View {
                         Button(action: {
                             u.persistImageToStorage(image: image, tag: tagSelectionUpload, name: fileName)
                         }) { Text("Publish Image").mediumText().padding(15) }.publishButton().padding()
-                    }
-                    Button("retrieveImage") {
-                        d.retrieveImage()
-                    }
-                    VStack {
-                        Text("UID: \(d.userUID)")
-                        Text("EMAIL: \(d.userEmail)")
-                        Text("URL: \(d.fileURL)")
-                        AsyncImage(url: URL(string: "\(d.fileURL)")) { phase in
-                            if let image = phase.image {
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            }
-                        }
-                            .frame(width: 64, height: 64)
-                            .background(Color.gray)
                     }
                 }
                 .padding()
